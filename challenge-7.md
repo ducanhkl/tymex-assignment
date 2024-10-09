@@ -440,5 +440,5 @@ sequenceDiagram
 
 ### Further improvement
 - Use Redis for locking by orderId to prevent concurrency issues during simultaneous update requests.
-- Implement batching in cron job steps to reduce I/O time between services and persistent storage.
+- Implement batching in cron job and search steps to reduce I/O time between services and persistent storage.
 - Apply circuit breakers for external service calls (e.g., payment gateways) to handle potential slowdowns or failures gracefully, preventing system-wide impacts.
