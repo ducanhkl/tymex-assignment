@@ -1,6 +1,6 @@
 
-## Challenge 7
-### Question
+# Challenge 7
+## Question
 ```
 System design
 Design a high load payment system.
@@ -15,11 +15,11 @@ Resource limit:
 One database can open 250 connections.
 
 ```
-### Answer
+## Answer
 
-<details>
 
-<summary>Make assumptions</summary>
+
+### Make assumptions
 
 In this analysis, I will outline functional and non-functional requirements for a website designed to facilitate user orders and payments during Black Friday. 
 The system must handle 3,000 requests per second, with 2,500 of these being read requests and the remainder being write requests.
@@ -39,10 +39,10 @@ The system must handle 3,000 requests per second, with 2,500 of these being read
     - The server must support horizontal scaling for read requests.
     - There must be mechanisms between multiple servers to keep the system state consistent, particularly regarding financial transactions, with no margin for error.
 
-</details>
 
-<details>
-<summary>Analysis</summary>
+
+
+### Analysis
 The system consists of two main components: the customer interface and the admin interface, 
 with customer traffic expected to be significantly higher. 
 Users will primarily engage in searching for and ordering items, generating substantial backend requests.
@@ -69,11 +69,11 @@ In the next step, the customer will make the payment for the order. When the cus
 
 Regarding the investigation of customer behavior, we can send audit logs from our services to third-party tools like Loki or Mixpanel for analysis. We can send this data over Kafka for reliability.
 
-</details>
-<details>
-<summary>High level design</summary>
 
-#### Endpoinnt design
+
+### High level design
+
+## Endpoinnt design
 | API             | Method | Endpoint                     | Description                                                    | Request Body                                                                                                                                                       |
 |-----------------|--------|------------------------------|----------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **api-auth**    | POST   | `/user`                      | Create new user                                                | ```json { "username": "johndoe", "password": "password123", "email": "johndoe@example.com", "phone": "+1234567890" } ```                                           |
@@ -93,16 +93,16 @@ Regarding the investigation of customer behavior, we can send audit logs from ou
 | **api-items**   | PUT    | `/item/quantity`             | Admin update item quantity                                     | ```json { "itemId": "56789", "newQuantity": 150 } ```                                                                                                              |
 | **api-items**   | GET    | `/items/search`              | Customer/Admin search for items                                | ```json { "query": "wireless", "category": "Electronics" } ```                                                                                                     |
 | **api-items**   | PUT    | `/item/hold/check-release`   | Check and release hold record if order is not placed           | ```json { "orderId": "98765", "expiryTime": "2024-10-07T13:05:00Z" } ```                                                                        |
-#### Architecture diagram
+## Architecture diagram
 
 ![Architecure diagram](img/architecture.png)
 
 [Link to draw](https://excalidraw.com/#json=GgRb7gR8WD018BTY_C8cj,jzEre_oUIJGm_6OpOniYdA)
 
-</details>
 
-<details>
-<summary>Database diagram</summary>
+
+
+### Database diagram
 
 ```mermaid
 erDiagram
@@ -184,11 +184,11 @@ erDiagram
 | **PaymentStatus** | `PAYMENTS.status` | `"Pending"`, `"Completed"`, `"Refunded"`, `"Failed"` |
 | **HoldStatus**  | `HOLD_RECORDS.status` | `"Active"`, `"Released"`, `"Expired"`               |
 
-</details>
 
 
-<details>
-<summary>Sequence diagram</summary>
+
+
+### Sequence diagram
 
 - Search items
 
@@ -437,9 +437,8 @@ sequenceDiagram
     end
 ```
 
-<details>
-<summary>Further improvement</summary>
+
+### Further improvement
 - Use Redis for locking by orderId to prevent concurrency issues during simultaneous update requests.
 - Implement batching in cron job steps to reduce I/O time between services and persistent storage.
 - Apply circuit breakers for external service calls (e.g., payment gateways) to handle potential slowdowns or failures gracefully, preventing system-wide impacts.
-</details>
